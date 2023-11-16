@@ -4,14 +4,15 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 const refs = {
   formEl: document.querySelector('#search-form'),
   galleryListEl: document.querySelector('.gallery'),
+  loadMoreBtnEl: document.querySelector('.load-more'),
 };
-console.log(refs.formEl);
 
 const pixabayAPI = new PixabayAPI();
 
 refs.formEl.addEventListener('submit', onFormSubmit);
+refs.loadMoreBtnEl.addEventListener('click', onLoadMoreBtnClick);
 
-function onFormSubmit(event) {
+async function onFormSubmit(event) {
   event.preventDefault();
 
   const { target: formEl } = event;
@@ -19,25 +20,49 @@ function onFormSubmit(event) {
   pixabayAPI.query = formEl.elements.searchQuery.value;
   pixabayAPI.page = 1;
 
-  pixabayAPI.fetchPhotosByQuery().then(res => {
+  try {
+    const res = await pixabayAPI.fetchPhotosByQuery();
     console.log(res);
-
     if (res.total === 0) {
       refs.galleryListEl.innerHTML = '';
 
-      // loadMoreBtnEl.classList.add('is-hidden');
+      refs.loadMoreBtnEl.classList.add('is-hidden');
 
       Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
 
-      // searchFormEl.reset();
+      refs.formEl.reset();
 
       return;
     }
 
     refs.galleryListEl.innerHTML = renderPhotos(res);
-  });
+    refs.loadMoreBtnEl.classList.remove('is-hidden');
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function onLoadMoreBtnClick(event) {
+  pixabayAPI.page += 1;
+
+  refs.loadMoreBtnEl.classList.add('is-hidden');
+
+  const res = await pixabayAPI.fetchPhotosByQuery();
+  try {
+    refs.galleryListEl.insertAdjacentHTML('beforeend', renderPhotos(res));
+
+    if (res.totalHits === pixabayAPI.page) {
+      refs.loadMoreBtnEl.classList.add('is-hidden');
+
+      Notify.info("We're sorry, but you've reached the end of search results.");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  refs.loadMoreBtnEl.classList.remove('is-hidden');
 }
 
 function photoTemplate(photo) {
