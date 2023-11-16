@@ -73,14 +73,6 @@ function photoTemplate(photo) {
 </div >`;
 }
 
-// webformatURL - посилання на маленьке зображення для списку карток.
-// largeImageURL - посилання на велике зображення.
-// tags - рядок з описом зображення. Підійде для атрибуту alt.
-// likes - кількість лайків.
-// views - кількість переглядів.
-// comments - кількість коментарів.
-// downloads - кількість завантажень.
-
 function photosTemplate(photosArr) {
   return photosArr.hits.map(photoTemplate).join('');
 }

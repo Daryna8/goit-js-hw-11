@@ -21,7 +21,7 @@ export class PixabayAPI {
       },
     };
     return axios
-      .get('/api', pixabayOptions)
+      .get('/api/', pixabayOptions)
       .then(res => res.data)
       .catch(err => console.log(err));
   }
