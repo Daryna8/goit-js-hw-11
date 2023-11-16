@@ -8,7 +8,7 @@ export class PixabayAPI {
     axios.defaults.baseURL = 'https://pixabay.com';
   }
 
-  fetchPhotosByQuery() {
+  async fetchPhotosByQuery() {
     const pixabayOptions = {
       params: {
         key: '40690513-b077cfa16de2d7f38a98e7259',
@@ -20,9 +20,7 @@ export class PixabayAPI {
         per_page: 40,
       },
     };
-    return axios
-      .get('/api/', pixabayOptions)
-      .then(res => res.data)
-      .catch(err => console.log(err));
+    const res = await axios.get('/api/', pixabayOptions);
+    return res.data;
   }
 }
